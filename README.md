@@ -9,7 +9,7 @@ It simplifies steps such as plotting, SNP annotation, and result parsing for lar
 
 ### Option 1 — From source
 ```bash
-git clone https://github.com/Dufouranto0/postgwas-tools.git
+git clone https://github.com/neurospin/postgwas-tools.git
 cd postgwas-tools
 python3 -m venv venv
 . venv/bin/activate
@@ -27,7 +27,7 @@ To install the phecovbabel pacakge as a pcocc-rs image on irene!
  - run the following commands
 
 ```bash
-git clone https://github.com/Dufouranto0/postgwas-tools.git
+git clone https://github.com/neurospin/postgwas-tools.git
 cd postgwas-tools
 # push-docker-tgcc.sh is a command from InstallTGCC
 push-docker-tgcc.sh -s `pwd` -d postgwas -t 1.0 -r n4h00001rs
