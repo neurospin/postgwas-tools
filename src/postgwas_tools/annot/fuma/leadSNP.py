@@ -587,7 +587,7 @@ def main():
 
     # Build and write outputs: GenomicRiskLoci.txt, leadSNPs.txt, IndSigSNPs.txt
     print("Building final tables...")
-    genomic_df, lead_df, ind_df_out = build_outputs(merged_regions, good_df, ind_df, outdir)
+    genomic_df, lead_df, ind_df_out = build_outputs(merged_regions, good_df, ind_df)
     write_results(outdir, genomic_df, lead_df, ind_df_out)
     # Write params.config
     config_path = os.path.join(outdir, "params.config")
