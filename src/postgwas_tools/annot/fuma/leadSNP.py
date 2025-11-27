@@ -469,18 +469,10 @@ def write_results(outdir, genomic_df, lead_df, ind_df_out):
     lead_path = os.path.join(outdir, "leadSNPs.txt")
     ind_path = os.path.join(outdir, "IndSigSNPs.txt")
 
-    if not genomic_df.empty:
-        genomic_df.to_csv(genomic_path, sep="\t", index=False)
-    else:
-        pd.DataFrame().to_csv(genomic_path, sep="\t", index=False)
-    if not lead_df.empty:
-        lead_df.to_csv(lead_path, sep="\t", index=False)
-    else:
-        pd.DataFrame().to_csv(lead_path, sep="\t", index=False)
-    if not ind_df_out.empty:
-        ind_df_out.to_csv(ind_path, sep="\t", index=False)
-    else:
-        pd.DataFrame().to_csv(ind_path, sep="\t", index=False)
+    # Always write header — even when dataframe is empty
+    genomic_df.to_csv(genomic_path, sep="\t", index=False)
+    lead_df.to_csv(lead_path, sep="\t", index=False)
+    ind_df_out.to_csv(ind_path, sep="\t", index=False)
 
     print(f"GenomicRiskLoci saved to: {genomic_path}")
     print(f"Lead SNP table saved to: {lead_path}")

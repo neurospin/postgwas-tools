@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "postgwas-tools"
-version = "0.0.1"
+version = "0.0.2"
 description = "A collection of tools for post-GWAS analysis and annotation"
 authors = [
   { name="Antoine Dufournet", email="antoine.dufournet@cea.fr" },
@@ -50,3 +50,4 @@ process_results_ext = "postgwas_tools.mostest.process_results_ext:main"
 process_results = "postgwas_tools.mostest.process_results:main"
 
 replication_by_rsid = "postgwas_tools.annot.replication.replication_by_rsid:main"
+pairwise_dice = "postgwas_tools.annot.replication.pairwise_dice:main"
