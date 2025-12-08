@@ -108,7 +108,9 @@ def plot_miami(file_paths, output_folder, y_max=None):
     if not y_max:
         y_max = 300
     
-    fig, axes = plt.subplots(2, 1, figsize=(21, 10.5), sharex=True, gridspec_kw={'hspace': 0.05})
+    fig, axes = plt.subplots(2, 1, figsize=(21, 10.5), sharex=True, gridspec_kw={'hspace': 0.12})
+    pos = axes[0].get_position()
+    axes[0].set_position([pos.x0, pos.y0 - 0.02, pos.width, pos.height])
 
     for i, file in enumerate(file_paths):  # Expecting exactly 2 files
         print(f"Reading {file}")
@@ -153,13 +155,14 @@ def plot_miami(file_paths, output_folder, y_max=None):
             top_y_limit = min(y_max, -np.log10(min_p_top))
             axes[j].axhline(y=sig1, color='r', linestyle='--')
             axes[j].axhline(y=sig2, color='g', linestyle='--')
-            axes[j].set_ylim(1, top_y_limit)
+            axes[j].set_ylim(0, top_y_limit)
         else:
             min_p_bot = min(df["P"].min(), min_p_bot)
             bottom_y_limit = min(y_max, -np.log10(min_p_bot))
+            bottom_y_limit = max(top_y_limit, bottom_y_limit)
             axes[j].axhline(y=-sig1, color='r', linestyle='--')
             axes[j].axhline(y=-sig2, color='g', linestyle='--')
-            axes[j].set_ylim(-bottom_y_limit, -2)
+            axes[j].set_ylim(-bottom_y_limit, 0)
 
         # Remove 0 label from y-axis
         yticks = axes[j].get_yticks()
@@ -168,8 +171,8 @@ def plot_miami(file_paths, output_folder, y_max=None):
         axes[j].set_yticklabels([str(int(abs(t))) for t in yticks], fontsize=16)
 
     # Frame line cleanup
-    axes[0].spines['bottom'].set_visible(False)
-    axes[1].spines['top'].set_visible(False)
+    axes[0].spines['bottom'].set_visible(True)
+    axes[1].spines['top'].set_visible(True)
 
     # Chromosome labels between plots
     chromosome_ticks = [
@@ -195,7 +198,7 @@ def plot_miami(file_paths, output_folder, y_max=None):
     ])
 
     output_path = os.path.join(output_folder, "miami_plot.png")
-    plt.savefig(output_path, format='png', transparent=True)
+    plt.savefig(output_path, format='png', transparent=True, bbox_inches="tight", pad_inches=0.1)
     print(f"Saved Miami subplot to {output_path}")
 
 
