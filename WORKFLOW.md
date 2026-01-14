@@ -173,7 +173,7 @@ manhattan_plot -p /data/gwas1.sumstats /data/gwas2.sumstats /data/gwas3.sumstats
 
 Alternatively, you can use a wildcard:
 ```bash
-manhattan_plot -p "/data/*.sumstats" \
+multi_plot -p "/data/*.sumstats" \
                -k manhattan \
                -o results
 ```
