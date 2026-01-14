@@ -63,7 +63,7 @@ def read_sumstats(file_path, A1=None, A2=None):
     Automatically detects separator (tab, comma, whitespace) and supports both
     plain text and gzipped (.gz) files. Maps columns:
       - 'chr', '#chr', '#chrom', 'chrom', 'chromosome' -> 'CHR'
-      - 'bp', 'pos' -> 'BP'
+      - 'bp', 'pos', 'posgrch37'-> 'BP'
       - 'snp', 'id', 'markername', 'rs', 'rs_number', 'snpid', 'rsid' -> 'SNP'
       - 'p', 'pvalue', 'p_value', 'pval', 'p_val', 'gc_pvalue' -> 'P'
 
@@ -105,7 +105,7 @@ def read_sumstats(file_path, A1=None, A2=None):
     for col in df.columns:
         if col in ['chr', '#chr', '#chrom', 'chrom', 'chromosome']:
             col_map[col] = 'CHR'
-        elif col in ['bp', 'pos']:
+        elif col in ['bp', 'pos', 'posgrch37']:
             col_map[col] = 'BP'
         elif col in ['snp', 'rsid', 'markername', 'rs', 'id', 'rs_number', 'snpid']:
             col_map[col] = 'SNP'
