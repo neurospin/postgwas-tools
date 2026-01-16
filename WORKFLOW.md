@@ -145,6 +145,7 @@ Instead of plotting each SNP individually, it draws **rectangles** for each chro
 
 Annotations from the previous step (e.g., lead SNP names) can be added.
 Both `GenomicRiskLoci.txt` and `leadSNPs.txt` are supported.
+Note that the X chromosome is not included for now.
 
 ```bash
 manhattan_plot -p /data/gwas.sumstats \
@@ -163,6 +164,7 @@ manhattan_plot -p /data/gwas.sumstats \
 If you want to plot many results on a same figure to compare different phenotypes, you can.
 Also, you can apply a threshold on the maximum `-log10(p-value)` to avoid having a shrinked manhattan plot because of a very low p-value.
 To do so, use `--ymax` with the value `40` for instance.
+Note that the X chromosome is not included for now.
 Generate a combined Manhattan plot for multiple GWAS results in a `manhattan_plot.png`:
 
 ```bash
@@ -201,6 +203,7 @@ manhattan_plot -p /data/gwas1.sumstats /data/gwas2.sumstats \
 
 Use this command to check GWAS inflation.
 Based on code from [ShujiaHuang/qmplot](https://github.com/ShujiaHuang/qmplot):
+TO CHANGE BECAUSE OF THE LICENSE CONFLICT!!!
 
 ```bash
 QQ_plot -p /data/gwas.sumstats \
