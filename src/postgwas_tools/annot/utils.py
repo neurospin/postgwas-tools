@@ -65,7 +65,7 @@ def read_sumstats(file_path, A1=None, A2=None):
       - 'chr', '#chr', '#chrom', 'chrom', 'chromosome' -> 'CHR'
       - 'bp', 'pos', 'posgrch37', 'position-> 'BP'
       - 'snp', 'id', 'markername', 'rs', 'rs_number', 'snpid', 'rsid' -> 'SNP'
-      - 'p', 'pvalue', 'p_value', 'pval', 'p_val', 'gc_pvalue' -> 'P'
+      - 'p', 'pvalue', 'p_value', 'pval', 'p_val', 'gc_pvalue', 'p-value' -> 'P'
 
     Parameters
     ----------
@@ -109,7 +109,7 @@ def read_sumstats(file_path, A1=None, A2=None):
             col_map[col] = 'BP'
         elif col in ['snp', 'rsid', 'markername', 'rs', 'id', 'rs_number', 'snpid']:
             col_map[col] = 'SNP'
-        elif col in ['p', 'pvalue', 'p_value', 'pval', 'p_val', 'gc_pvalue']:
+        elif col in ['p', 'pvalue', 'p_value', 'pval', 'p_val', 'gc_pvalue', 'p-value']:
             col_map[col] = 'P'
     if A1 and A1.strip().lower() in df.columns:
         col_map[A1.strip().lower()] = 'A1'
