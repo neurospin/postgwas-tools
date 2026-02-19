@@ -168,7 +168,7 @@ Note that the X chromosome is not included for now.
 Generate a combined Manhattan plot for multiple GWAS results in a `manhattan_plot.png`:
 
 ```bash
-manhattan_plot -p /data/gwas1.sumstats /data/gwas2.sumstats /data/gwas3.sumstats \
+multi_plot -p /data/gwas1.sumstats /data/gwas2.sumstats /data/gwas3.sumstats \
                -k manhattan \
                -o results
 ```
@@ -188,10 +188,11 @@ If you want to make a Miami plot, it is possible as well.
 Specify the kind with -k as miami to obtain a `miami_plot.png`.
 
 ```bash
-manhattan_plot -p /data/gwas1.sumstats /data/gwas2.sumstats \
+multi_plot -p /data/gwas1.sumstats /data/gwas2.sumstats \
                -k miami \
                --ymax 40 \
-               -o results
+               -o results \
+               --colors blue red
 ```
 
 **Example output:**
