@@ -19,8 +19,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
-def plot_manhattan(file_path, title=None, output_folder=None, lead_snps_path=None):
-    base_colors = ['blue', 'red', 'green', 'purple', 'orange', 'brown', 'pink', 'gray', 'olive', 'cyan']
+def plot_manhattan(file_path, title=None, output_folder=None, lead_snps_path=None, , color=None):
+    base_colors = ['blue', 'red', 'green', 'purple', 'orange', 'brown', 'pink', 'gray', 'olive', 'cyan']  if color is None else color
 
     plt.figure(figsize=(19.20,10.80))
 
@@ -135,12 +135,17 @@ def main():
                     help="Path to lead SNPs file to label on the Manhattan plot.")
     parser.add_argument('-o', '--out', type=str, default=None,
                         help="Output folder for saving the plot.")
+    parser.add_argument(
+        '--color', type=str, default=None,
+        help="Color you want on your plots"
+    )
     
     args = parser.parse_args()
     file_path = args.path
     title = args.title
     lead_snps_path = args.lead_snps
     output_folder= args.out
+    color = args.color
 
     #if not title:
     #    model = file_path.split('/')[-3]  
@@ -148,7 +153,7 @@ def main():
     #    title = f"of the {region} region with model {model}"
 
     # Call the plotting function with the found file paths
-    plot_manhattan(file_path, title, output_folder, lead_snps_path)
+    plot_manhattan(file_path, title, output_folder, lead_snps_path, color)
 
 if __name__ == "__main__":
     main()

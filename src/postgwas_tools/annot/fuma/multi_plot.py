@@ -21,9 +21,9 @@ import matplotlib.pyplot as plt
 import os
 
 
-def plot_manhattan(file_paths, output_folder, y_max=None):
+def plot_manhattan(file_paths, output_folder, y_max=None, colors=None):
     # List of distinct base colors for each model
-    base_colors = ['blue', 'red', 'green', 'purple', 'orange', 'brown', 'pink', 'gray', 'olive', 'cyan']
+    base_colors = ['blue', 'red', 'green', 'purple', 'orange', 'brown', 'pink', 'gray', 'olive', 'cyan'] if colors is None else colors
 
     plt.figure(figsize=(21, 10.5))
 
@@ -34,7 +34,7 @@ def plot_manhattan(file_paths, output_folder, y_max=None):
     # Loop through each file and plot data
     for i, file in enumerate(file_paths):
         print(f"Working with file: {file}")
-        model = file.split('/')[-2]
+        #model = file.split('/')[-2]
         
         df = read_sumstats(file)
         
@@ -65,12 +65,12 @@ def plot_manhattan(file_paths, output_folder, y_max=None):
             # Adjust color brightness based on chromosome index
             base_color = base_colors[i % len(base_colors)]  # Base color based on the model
             brightness_factor = 1.5 if chrom_idx % 2 == 0 else 0.5  # Stronger light or dark shades
-            adjusted_color = adjust_color_brightness(base_color, brightness_factor)
-
+            #adjusted_color = adjust_color_brightness(base_color, brightness_factor)
+            adjusted_color = base_colors[i % len(base_colors)] if chrom_idx%2==0 else 'dimgray'
             # Plot data for the chromosome
             plt.scatter(chrom_data['x_val'], chrom_data['neg_log10_pval'], 
-                        color=adjusted_color, s=7,
-                        label=model if chrom_idx == 0 else "")  # Add label only once per model
+                        color=adjusted_color, s=7)#,
+                        #label=model if chrom_idx == 0 else "")  # Add label only once per model
 
     # Add a horizontal significance threshold line
     plt.axhline(y=-np.log10(0.05/1000000), color='r', linestyle='--')
@@ -99,8 +99,8 @@ def plot_manhattan(file_paths, output_folder, y_max=None):
     print(f"Plot saved to: {output_folder}/{output_path}")
     #plt.show()
 
-def plot_miami(file_paths, output_folder, y_max=None):
-    base_colors = ['blue', 'red', 'green', 'purple', 'orange', 'brown', 'pink', 'gray', 'olive', 'cyan']
+def plot_miami(file_paths, output_folder, y_max=None, colors=None):
+    base_colors = ['blue', 'red', 'green', 'purple', 'orange', 'brown', 'pink', 'gray', 'olive', 'cyan'] if colors is None else colors
     chrom_offsets = None
     dic_start_end_chr = {}
     min_p_top = 1e-2
@@ -143,7 +143,8 @@ def plot_miami(file_paths, output_folder, y_max=None):
             chrom_data = df[df['CHR'] == chrom]
             base_color = base_colors[j % len(base_colors)]
             brightness = 1.5 if chrom_idx % 2 == 0 else 0.5
-            adjusted_color = adjust_color_brightness(base_color, brightness)
+            #adjusted_color = adjust_color_brightness(base_color, brightness)
+            adjusted_color = base_colors[i % len(base_colors)] if chrom_idx%2==0 else 'dimgray'
             y_vals = chrom_data['neg_log10_pval'] if j == 0 else -chrom_data['neg_log10_pval']
             axes[j].scatter(chrom_data['x_val'], y_vals, color=adjusted_color, s=7)
 
@@ -223,6 +224,10 @@ def main():
         '--ymax', type=int, default=None,
         help="Value of the max -log10(p-value) to be plot"
     )
+    parser.add_argument(
+        '--colors', nargs='+', type=str, default=None,
+        help="Colors you want on your plots"
+    )
     args = parser.parse_args()
 
     # Find files matching any path or pattern
@@ -240,9 +245,9 @@ def main():
         print(f"   - {f}")
 
     if plot_type == 'manhattan':
-        plot_manhattan(file_paths, output_folder, y_max=args.ymax)
+        plot_manhattan(file_paths, output_folder, y_max=args.ymax, colors=args.colors)
     elif plot_type == 'miami':
-        plot_miami(file_paths, output_folder, y_max=args.ymax)
+        plot_miami(file_paths, output_folder, y_max=args.ymax, colors=args.colors)
 
 if __name__ == "__main__":
     main()
