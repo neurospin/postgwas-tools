@@ -57,7 +57,7 @@ def main():
 
     # generate .sumstats files, compatible with FUMA
     print('Generate {}.***.sumstats files...'.format(out))
-    for test in ['most_log10pval_orig']:# 'minp_log10pval_orig','minp_log10pval_perm', 'most_log10pval_perm'
+    for test in ['most_log10pval_orig', 'minp_log10pval_orig']:# 'minp_log10pval_orig','minp_log10pval_perm', 'most_log10pval_perm'
         bim['PVAL'] = np.power(10, -mat[test].flatten())
         bim['Z_FAKE'] = -stats.norm.ppf(bim['PVAL'].values*0.5) #*effect_sign.astype(np.float64) - effect size not available from MOSTest and minP
         bim['N'] = mat['nvec']
