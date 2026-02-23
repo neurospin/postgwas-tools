@@ -19,7 +19,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
-def plot_manhattan(file_path, title=None, output_folder=None, lead_snps_path=None, , color=None):
+def plot_manhattan(file_path, title=None, output_folder=None, lead_snps_path=None, color=None):
     base_colors = ['blue', 'red', 'green', 'purple', 'orange', 'brown', 'pink', 'gray', 'olive', 'cyan']  if color is None else color
 
     plt.figure(figsize=(19.20,10.80))
