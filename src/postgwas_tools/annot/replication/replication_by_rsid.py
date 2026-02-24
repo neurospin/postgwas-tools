@@ -8,10 +8,10 @@
 # Antoine Dufournet
 ##########################################################################
 """
-replication_by_rsid_with_fallback_and_log_v2.py
+replication_by_rsid.py
 
 Usage:
-    python replication_by_rsid_with_fallback_and_log_v2.py \
+    python replication_by_rsid.py \
         --lead-snps path/to/leadSNPs.txt \
         --sumstats path/to/ABCD_sumstats.txt \
         --out path/to/replication_matches.txt
@@ -47,7 +47,7 @@ def read_lead_rsids(path):
 
         indsig_col = None
         for i, h in enumerate(header):
-            if h == 'nIndSigSNPs':
+            if h == 'IndSigSNPs':
                 indsig_col = i
                 break
 
