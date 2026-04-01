@@ -45,9 +45,11 @@ def summarize_region(lead_file, repl_file):
     merged["p_rep"] = pd.to_numeric(merged["p_rep"], errors="coerce")
     threshold = 0.05 
     n_rep = (merged["p_rep"] < threshold).sum()
+    n_rep_bonf = (merged["p_rep"] < threshold/n_tested).sum()
     perc = (n_rep / n_tested) * 100
+    perc_bonf = (n_rep_bonf / n_tested) * 100
 
-    return n_tested, n_rep, perc
+    return n_tested, n_rep, perc, n_rep_bonf, perc_bonf
 
 
 def main():
@@ -60,33 +62,35 @@ def main():
     results = []
 
     for root, _, files in os.walk(args.replication):
-        if "replication_matches.txt" not in files:
+        if "replication_matches_8e-10.txt" not in files:
             continue
 
         # Only keep "All" population
         if "White" in root or "white" in root:
             continue
 
-        repl_file = os.path.join(root, "replication_matches.txt")
+        repl_file = os.path.join(root, "replication_matches_8e-10.txt")
         region_path = "/".join(os.path.relpath(repl_file, args.replication).split("/")[:2])
 
         lead_file = os.path.join(
             args.discovery,
             region_path,
-            "32PCs/White/FUMA/leadSNPs.txt"
+            "32PCs/White/FUMA8e-10most/leadSNPs.txt"
         )
 
         if not os.path.exists(lead_file):
             continue
 
         try:
-            n_tested, n_rep, perc = summarize_region(lead_file, repl_file)
+            n_tested, n_rep, perc, n_rep_bonf, perc_bonf = summarize_region(lead_file, repl_file)
 
             results.append({
                 "region": region_path.split("/name")[0],
                 "N_tested": n_tested,
                 "N_replicated": n_rep,
-                "Replication_%": perc
+                "Replication_%": perc, 
+                "N_replicated_bonf": n_rep_bonf,
+                "Replication__bonf%": perc_bonf, 
             })
 
             print(f"{region_path}: {n_rep}/{n_tested} ({perc:.1f}%)")
@@ -104,9 +108,8 @@ def main():
     df = df.sort_values(by="Replication_%", ascending=True)
 
     # Save TSV
-    tsv_out = args.out.replace(".pdf", ".tsv")
-    df.to_csv(tsv_out, sep="\t", index=False)
-    print(f"Saved summary: {tsv_out}")
+    df.to_csv(args.out, sep="\t", index=False)
+    print(f"Saved summary: {args.out}")
 
     # -------------------------
     # Publication-quality plot
@@ -116,34 +119,100 @@ def main():
         "font.size": 8,
         "axes.linewidth": 0.8,
         "pdf.fonttype": 42,
-        "ps.fonttype": 42
+        "ps.fonttype": 42,
+        "font.family": "sans-serif",
     })
-
-    fig, ax = plt.subplots(figsize=(3.5, 6))  # Nature column width ≈ 3.5 inches
-
-    ax.scatter(
-        df["Replication_%"],
-        df["region"],
-        s=20,
-        color="#0072B2"
+ 
+    # Split hemispheres
+    df_left  = df[df["region"].str.endswith("_left")].copy()
+    df_right = df[df["region"].str.endswith("_right")].copy()
+ 
+    # Strip suffix for y-axis labels
+    df_left["label"]  = df_left["region"].str.replace("_left$",  "", regex=True)
+    df_right["label"] = df_right["region"].str.replace("_right$", "", regex=True)
+ 
+    # Sort each hemisphere independently by nominal replication rate
+    df_left  = df_left.sort_values("Replication_%", ascending=True).reset_index(drop=True)
+    df_right = df_right.sort_values("Replication_%", ascending=True).reset_index(drop=True)
+ 
+    COLOR_NOM  = "#0072B2"   # blue  — nominal threshold (p < 0.05)
+    COLOR_BONF = "#D55E00"   # orange — Bonferroni-corrected threshold (p < 0.05/n_loci)
+    DOT_SIZE   = 25
+    BAR_HEIGHT = 0.25        # vertical offset between the two dots per region
+ 
+    def draw_panel(ax, df_hemi, title):
+        """Draw one hemisphere panel."""
+        n = len(df_hemi)
+        y_positions = range(n)
+ 
+        for i, row in df_hemi.iterrows():
+            y = i
+            # Horizontal line connecting the two dots
+            ax.hlines(
+                y + BAR_HEIGHT / 2,
+                min(row["Replication_%"], row["Replication__bonf%"]),
+                max(row["Replication_%"], row["Replication__bonf%"]),
+                color="grey", linewidth=0.6, alpha=0.5, zorder=1
+            )
+            # Nominal dot (p < 0.05)
+            ax.scatter(
+                row["Replication_%"],
+                y + BAR_HEIGHT,
+                s=DOT_SIZE, color=COLOR_NOM,
+                zorder=2, label="p < 0.05" if i == 0 else ""
+            )
+            # Bonferroni dot (p < 0.05 / n_loci)
+            ax.scatter(
+                row["Replication__bonf%"],
+                y,
+                s=DOT_SIZE, color=COLOR_BONF, marker="D",
+                zorder=2, label="p < 0.05 / n loci" if i == 0 else ""
+            )
+ 
+        ax.set_yticks([i + BAR_HEIGHT / 2 for i in range(n)])
+        ax.set_yticklabels(df_hemi["label"], fontsize=7)
+        ax.set_xlim(0, 100)
+        ax.set_ylim(-0.5, n)
+        ax.set_xlabel("Replication rate (%)", fontsize=8)
+        ax.set_title(title, fontsize=9, fontweight="bold", pad=6)
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        ax.grid(axis="x", linestyle="--", linewidth=0.4, alpha=0.35)
+ 
+    # Figure dimensions: two panels side by side
+    n_left  = len(df_left)
+    n_right = len(df_right)
+    fig_height = max(n_left, n_right) * 0.32 + 1.2   # ~0.32 in per region + margins
+ 
+    fig, (ax_left, ax_right) = plt.subplots(
+        1, 2,
+        figsize=(7.2, fig_height),   # Nature full-width ≈ 7.2 in
+        sharey=False
     )
-
-    ax.set_xlabel("Replication rate (%)")
-    ax.set_ylabel("")
-
-    ax.set_xlim(0, 100)
-
-    # Remove top/right spines
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-
-    # Subtle x grid only
-    ax.grid(axis="x", linestyle="--", linewidth=0.5, alpha=0.3)
-
-    plt.tight_layout()
-
-    plt.savefig(args.out, format="pdf", bbox_inches="tight")
-    print(f"Saved Nature-style figure: {args.out}")
+ 
+    draw_panel(ax_left,  df_left,  "Left hemisphere")
+    draw_panel(ax_right, df_right, "Right hemisphere")
+ 
+    # Shared legend — placed above the figure
+    handles = [
+        plt.scatter([], [], s=DOT_SIZE, color=COLOR_NOM,  label="p < 0.05"),
+        plt.scatter([], [], s=DOT_SIZE, color=COLOR_BONF, marker="D",
+                    label=r"p < 0.05 / $n_{\mathrm{loci}}$"),
+    ]
+    fig.legend(
+        handles=handles,
+        loc="upper center",
+        ncol=2,
+        frameon=False,
+        fontsize=8,
+        bbox_to_anchor=(0.5, 1.01)
+    )
+ 
+    plt.tight_layout(rect=[0, 0, 1, 0.97])
+ 
+    png_out = args.out.replace(".tsv", "_replication.png")
+    plt.savefig(png_out, format="png", dpi=300, bbox_inches="tight")
+    print(f"Saved figure: {png_out}")
 
 
 if __name__ == "__main__":
