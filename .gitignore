@@ -209,4 +209,6 @@ marimo/_lsp/
 __marimo__/
 
 # Backup files
-*~
+*~# pixi environments
+.pixi/*
+!.pixi/config.toml
