@@ -201,17 +201,54 @@ multi_plot -p /data/gwas1.sumstats /data/gwas2.sumstats \
 ---
 
 ## QQ Plot
-
-Use this command to check GWAS inflation.
-Based on code from [ShujiaHuang/qmplot](https://github.com/ShujiaHuang/qmplot):
-TO CHANGE BECAUSE OF THE LICENSE CONFLICT!!!
-
+ 
+Use this command to assess GWAS summary statistics quality and genomic inflation.
+ 
 ```bash
 QQ_plot -p /data/gwas.sumstats \
-        -o results
+        -o results/
 ```
-
-<img src="docs/images/QQplot.png" alt="QQ Example" width="400">
+ 
+### What it does
+ 
+The QQ plot compares the **observed** $-\log_{10}(p)$ distribution against the **expected** distribution under the null hypothesis (no association). It also computes the **genomic inflation factor λ_GC** as a scalar summary of inflation.
+ 
+- Points following the diagonal → well-calibrated p-values
+- Points inflating above the diagonal early → systematic inflation (population stratification, cryptic relatedness, or technical artifacts)
+- A sharp deviation only at the tail → genuine polygenic signal (expected for complex traits at large N)
+The shaded band represents the **pointwise 95% confidence interval** derived from the Beta distribution of uniform order statistics.
+ 
+The **λ_GC** is defined as:
+ 
+$$\lambda_{GC} = \frac{\text{median}(\chi^2_{\text{observed}})}{\text{median}(\chi^2_{\text{expected}})} = \frac{\text{median}(\chi^2_{\text{observed}})}{0.4549}$$
+ 
+| λ_GC | Interpretation |
+|---|---|
+| ≈ 1.00 | Well-controlled, no inflation |
+| 1.02 – 1.05 | Mild inflation, acceptable for large N |
+| > 1.10 | Potentially problematic — investigate further |
+ 
+> **Note:** For large-N GWAS on polygenic traits, λ_GC > 1 does not necessarily indicate confounding.
+> Use [LDSC](https://github.com/bulik/ldsc) to disentangle inflation due to confounding from inflation due to true polygenicity.
+ 
+### Arguments
+ 
+| Argument | Short | Required | Description |
+|---|---|---|---|
+| `--path` | `-p` | ✅ | Path to the summary statistics file |
+| `--out` | `-o` | ❌ | Output folder (defaults to the input file directory) |
+| `--title` | | ❌ | Plot title (default: `QQ plot`) |
+| `--dpi` | | ❌ | Figure resolution in dots per inch (default: `150`) |
+ 
+### Output
+ 
+| File | Description |
+|---|---|
+| `QQplot.png` | QQ plot with 95% CI band and λ_GC annotation |
+ 
+### Example output
+ 
+<img src="docs/images/QQplot.png" alt="QQ plot example" width="400">
 
 ---
 
