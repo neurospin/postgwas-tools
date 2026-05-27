@@ -25,7 +25,6 @@ dependencies = [
     "matplotlib",
     "scipy",
     "seaborn",
-    "qmplot", 
     "h5py"
 ]
 

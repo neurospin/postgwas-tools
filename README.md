@@ -62,7 +62,7 @@ For detailed usage examples, including **QQ plots**, **locus-based analysis**, a
 ## Dependencies
 
 - Python ≥ 3.9  
-- pandas, numpy, matplotlib, seaborn, scipy, qmplot, h5py
+- pandas, numpy, matplotlib, seaborn, scipy, h5py
 
 All dependencies are automatically installed when you run `pip install -e .`.
 

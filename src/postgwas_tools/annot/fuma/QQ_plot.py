@@ -6,8 +6,6 @@ Computes:
   - Observed vs expected -log10(p) QQ plot with 95% confidence band
   - Genomic inflation factor lambda GC
     on observed ~ expected chi2 scores
- 
-No dependency on qmplot.
 """
  
 import argparse
